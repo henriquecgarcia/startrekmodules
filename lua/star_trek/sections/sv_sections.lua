@@ -457,12 +457,13 @@ end
 
 hook.Add("InitPostEntity", "Star_Trek.Sections.Setup", function() Star_Trek.Sections:Setup() end)
 hook.Add("PostCleanupMap", "Star_Trek.Sections.Setup", function() Star_Trek.Sections:Setup() end)
+
 local last_think = 0
 hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
 	if CurTime() - last_think < 0.1 then return end
 	last_think = CurTime()
 
-	for _, ply in pairs(player.GetHumans()) do
+	for _, ply in player.Iterator() do
 		if not IsValid(ply) and locations_overwatch[ply] ~= nil then
 			locations_overwatch[ply] = nil
 			continue
@@ -491,6 +492,7 @@ hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
 		end
 	end
 end)
+
 hook.Add("PlayerDisconnected", "Star_Trek.Sections.PlayerDisconnected", function(ply)
 	if not IsValid(ply) then return end
 	locations_overwatch[ply] = nil
