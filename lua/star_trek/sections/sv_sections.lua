@@ -477,7 +477,6 @@ hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
 		local pos = ply:GetPos()
 		local success, deck, sectionId = Star_Trek.Sections:DetermineSection(pos)
 		if not success then
-			-- hook basis: ply<Player>, old_deck<Number | nil>, old_sectionId<String | nil>, new_deck<Number | nil>, new_sectionId<String | nil>
 			if old_data then hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, nil, nil) end
 			locations_overwatch[ply].Deck = nil
 			locations_overwatch[ply].SectionId = nil
@@ -485,8 +484,9 @@ hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
 		end
 
 		if not old_data or old_data.Deck ~= deck or old_data.SectionId ~= sectionId then
-			old_data = old_data or {}
-			hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, deck, sectionId)
+			if locations_overwatch[ply].Deck ~= deck or locations_overwatch[ply].SectionId ~= sectionId then
+				hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, deck, sectionId)
+			end
 			locations_overwatch[ply].Deck = deck
 			locations_overwatch[ply].SectionId = sectionId
 		end
