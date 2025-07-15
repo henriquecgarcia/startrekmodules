@@ -300,8 +300,11 @@ local function generateBounds(bounds, min, max)
 	table.insert(bounds, boundData)
 end
 
+local locations_overwatch = {}
+
 function Star_Trek.Sections:Setup()
 	self.Decks = {}
+	locations_overwatch = {}
 
 	local globalMin = Vector( math.huge,  math.huge,  math.huge)
 	local globalMax = Vector(-math.huge, -math.huge, -math.huge)
@@ -454,3 +457,41 @@ end
 
 hook.Add("InitPostEntity", "Star_Trek.Sections.Setup", function() Star_Trek.Sections:Setup() end)
 hook.Add("PostCleanupMap", "Star_Trek.Sections.Setup", function() Star_Trek.Sections:Setup() end)
+local last_think = 0
+hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
+	if CurTime() - last_think < 0.1 then return end
+	last_think = CurTime()
+
+	for _, ply in pairs(player.GetHumans()) do
+		if not IsValid(ply) and locations_overwatch[ply] ~= nil then
+			locations_overwatch[ply] = nil
+			continue
+		end
+
+		local old_data = locations_overwatch[ply]
+		if not locations_overwatch[ply] then
+			locations_overwatch[ply] = {}
+		end
+
+		local pos = ply:GetPos()
+		local success, deck, sectionId = Star_Trek.Sections:DetermineSection(pos)
+		if not success then
+			-- hook basis: ply<Player>, old_deck<Number | nil>, old_sectionId<String | nil>, new_deck<Number | nil>, new_sectionId<String | nil>
+			if old_data then hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, nil, nil) end
+			locations_overwatch[ply].Deck = nil
+			locations_overwatch[ply].SectionId = nil
+			continue
+		end
+
+		if not old_data or old_data.Deck ~= deck or old_data.SectionId ~= sectionId then
+			old_data = old_data or {}
+			hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, deck, sectionId)
+			locations_overwatch[ply].Deck = deck
+			locations_overwatch[ply].SectionId = sectionId
+		end
+	end
+end)
+hook.Add("PlayerDisconnected", "Star_Trek.Sections.PlayerDisconnected", function(ply)
+	if not IsValid(ply) then return end
+	locations_overwatch[ply] = nil
+end)
