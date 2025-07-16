@@ -1,19 +1,19 @@
 ---------------------------------------
 ---------------------------------------
---         Star Trek Modules         --
---                                   --
---            Created by             --
---       Jan 'Oninoni' Ziegler       --
---                                   --
+--		 Star Trek Modules		 --
+--								   --
+--			Created by			 --
+--	   Jan 'Oninoni' Ziegler	   --
+--								   --
 -- This software can be used freely, --
---    but only distributed by me.    --
---                                   --
---    Copyright © 2022 Jan Ziegler   --
+--	but only distributed by me.	--
+--								   --
+--	Copyright © 2022 Jan Ziegler   --
 ---------------------------------------
 ---------------------------------------
 
 ---------------------------------------
---         Sections | Server         --
+--		 Sections | Server		 --
 ---------------------------------------
 
 -- Get the data of the given deck number.
@@ -464,36 +464,34 @@ hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
 	last_think = CurTime()
 
 	for _, ply in player.Iterator() do
-		if not IsValid(ply) and locations_overwatch[ply] ~= nil then
-			locations_overwatch[ply] = nil
-			continue
-		end
-
 		local old_data = locations_overwatch[ply]
-		if not locations_overwatch[ply] then
-			locations_overwatch[ply] = {}
+
+		if not IsValid(ply) then
+			if old_data then
+				locations_overwatch[ply] = nil
+			end
+			continue
 		end
 
 		local pos = ply:GetPos()
-		local success, deck, sectionId = Star_Trek.Sections:DetermineSection(pos)
+		local success, new_deck, new_sectionId = Star_Trek.Sections:DetermineSection(pos)
+
 		if not success then
-			if old_data then hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, nil, nil) end
-			locations_overwatch[ply] = nil
-			continue
+			new_deck = nil
+			new_sectionId = nil
 		end
 
-		if deck == nil or sectionId == nil then
-			if old_data then hook.Run("Star_Trek.Sections.LocationChanged", ply, old_data.Deck, old_data.SectionId, nil, nil) end
-			locations_overwatch[ply] = nil
-			continue
-		end
+		local old_deck = old_data and old_data.Deck or nil
+		local old_sectionId = old_data and old_data.SectionId or nil
 
-		if not old_data or (old_data.Deck or nil) ~= deck or (old_data.SectionId or nil) ~= sectionId then
-			if locations_overwatch[ply].Deck ~= deck or locations_overwatch[ply].SectionId ~= sectionId then
-				hook.Run("Star_Trek.Sections.LocationChanged", ply, (old_data.Deck or nil), (old_data.SectionId or nil), deck, sectionId)
+		if new_deck ~= old_deck or new_sectionId ~= old_sectionId then
+			hook.Run("Star_Trek.Sections.LocationChanged", ply, old_deck, old_sectionId, new_deck, new_sectionId)
+
+			if success then
+				locations_overwatch[ply] = { Deck = new_deck, SectionId = new_sectionId }
+			else
+				locations_overwatch[ply] = nil
 			end
-			locations_overwatch[ply].Deck = deck
-			locations_overwatch[ply].SectionId = sectionId
 		end
 	end
 end)
