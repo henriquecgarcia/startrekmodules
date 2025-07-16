@@ -488,7 +488,7 @@ hook.Add("Think", "Star_Trek.Sections.LocationsOverwatch", function()
 			continue
 		end
 
-		if not old_data or old_data.Deck ~= deck or old_data.SectionId ~= sectionId then
+		if not old_data or (old_data.Deck or nil) ~= deck or (old_data.SectionId or nil) ~= sectionId then
 			if locations_overwatch[ply].Deck ~= deck or locations_overwatch[ply].SectionId ~= sectionId then
 				hook.Run("Star_Trek.Sections.LocationChanged", ply, (old_data.Deck or nil), (old_data.SectionId or nil), deck, sectionId)
 			end
