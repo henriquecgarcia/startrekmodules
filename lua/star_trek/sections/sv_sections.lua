@@ -1,19 +1,19 @@
 ---------------------------------------
 ---------------------------------------
---		 Star Trek Modules		 --
---								   --
---			Created by			 --
---	   Jan 'Oninoni' Ziegler	   --
---								   --
+--         Star Trek Modules         --
+--                                   --
+--            Created by             --
+--       Jan 'Oninoni' Ziegler       --
+--                                   --
 -- This software can be used freely, --
---	but only distributed by me.	--
---								   --
---	Copyright © 2022 Jan Ziegler   --
+--    but only distributed by me.    --
+--                                   --
+--    Copyright © 2022 Jan Ziegler   --
 ---------------------------------------
 ---------------------------------------
 
 ---------------------------------------
---		 Sections | Server		 --
+--         Sections | Server         --
 ---------------------------------------
 
 -- Get the data of the given deck number.
