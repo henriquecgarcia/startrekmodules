@@ -143,6 +143,13 @@ function Star_Trek.Turbolift:GetObjects(liftEntity)
 				continue
 			end
 
+			-- Don't teleport frozen props
+			local physobj = ent:GetPhysicsObject()
+			if IsValid(physobj) and !physobj:IsMotionEnabled() then
+				continue
+			end
+
+
 			if hook.Run("Star_Trek.Turbolift.ExcludeTeleport", liftEntity, ent) then
 				continue
 			end
